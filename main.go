@@ -1,5 +1,8 @@
 package main
 
+/*
+
+version with sessions bcrypt fmt
 
 import (
          "github.com/gorilla/sessions"
@@ -158,7 +161,11 @@ import (
 	 port := os.Getenv("PORT") 
 	 http.ListenAndServe(":" + port, nil)
  }
-/*  original 
+trermina version gorrila bencrypt
+
+*/
+
+//  original 
 import (
 	"log"
 	"net/http"
@@ -186,4 +193,4 @@ func main() {
 
 	router.Run(":" + port)
 }
-*/
+//termin ortiginall
