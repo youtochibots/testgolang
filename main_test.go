@@ -1,23 +1,12 @@
-package ch01
+package main
 
 import "testing"
+import 	"fmt"
 
-func TestIsUnique(t *testing.T) {
-	if IsUnique("unique") {
-		t.Error("'unique' is not a unique string")
+func TestMultiplica(t *testing.T) {
+	req, err := http.NewRequest("GET", "v1/multiplica/4/5", nil)
+	if err != nil {
+		t.Fatalf("could not created request: %v", err)
 	}
-
-	if !IsUnique("uniqke") {
-		t.Error("'uniqke' is a unique string")
-	}
-}
-
-func TestIsUniqueVanilla(t *testing.T) {
-	if IsUniqueVanilla("unique") {
-		t.Error("'unique' is not a unique string")
-	}
-
-	if !IsUniqueVanilla("uniqke") {
-		t.Error("'uniqke' is a unique string")
-	}
+		
 }
