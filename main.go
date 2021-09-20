@@ -30,14 +30,11 @@ func main() {
 
 	
 	router.GET("/v1/albums", getAlbums)
+	
+	router.GET("v1/multiplica/:numero1/:numero2", getMultiplicaByID)
+	
 	router.Run(":" + port)
-/*
-	var r = net.GetRouter()
-	//route for test
-	    fmt.Print("cz  init net_v1")
 
- 	r.Handle("/v3/fetchtokenizedcards", netHandle(handleDBGettokenizedcards, nil)).Methods("GET")   //logicbusiness.go
-  */   
 
 }
 //termin ortiginall
@@ -63,4 +60,21 @@ var albums = []album{
 // getAlbums responds with the list of all albums as JSON.
 func getAlbums(c *gin.Context) {
     c.IndentedJSON(http.StatusOK, albums)
+}
+
+
+// getAlbums responds with the list of all albums as JSON.
+func getMultiplicaByID(c *gin.Context) {
+	 elemento1 := c.Param("numero1")
+	 elemento2 := c.Param("numero2")
+	
+	if s1, err := strconv.ParseFloat(elemento1, 32); err == nil {
+             fmt.Println(s1) // 3.1415927410125732
+       }
+       if s2, err := strconv.ParseFloat(elemento2, 32); err == nil {
+         fmt.Println(s1) // 3.14159265
+      }
+	
+	resultado := s1* s2;
+        c.IndentedJSON(http.StatusOK, albums)
 }
