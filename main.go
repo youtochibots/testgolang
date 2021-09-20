@@ -102,5 +102,5 @@ func getMultiplicaByID(c *gin.Context) {
 	fmt.Println(d+"si")
 
 //	response:= json.NewEncoder(w).Encode(map[string]string{"status": "OK"})	
-        c.IndentedJSON(http.StatusOK, albums)
+        c.IndentedJSON(http.StatusOK, resultados)
 }
