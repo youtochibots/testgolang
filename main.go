@@ -45,5 +45,5 @@ func main() {
 
 func handleDBGettokenizedcards(w http.ResponseWriter, r *http.Request) {
 
-	log.print("uno");					
+	fmt.Print("uno");					
 }
