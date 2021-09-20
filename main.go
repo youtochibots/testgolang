@@ -98,8 +98,8 @@ func getMultiplicaByID(c *gin.Context) {
 	sresultado := fmt.Sprintf("%f", resultado)
 	
 	resultados[0].Resultado = sresultado
-	
-	fmt.Println(resultados[resultado) +"si")
+	d:=resultados[0].Resultado 
+	fmt.Println(d+"si")
 
 //	response:= json.NewEncoder(w).Encode(map[string]string{"status": "OK"})	
         c.IndentedJSON(http.StatusOK, albums)
