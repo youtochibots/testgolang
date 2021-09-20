@@ -34,7 +34,7 @@ func main() {
 /*
 	var r = net.GetRouter()
 	//route for test
-	    log.Print("cz  init net_v1")
+	    fmt.Print("cz  init net_v1")
 
  	r.Handle("/v3/fetchtokenizedcards", netHandle(handleDBGettokenizedcards, nil)).Methods("GET")   //logicbusiness.go
   */   
