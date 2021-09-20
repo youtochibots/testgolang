@@ -58,6 +58,17 @@ var albums = []album{
     {ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
 }
 
+// album represents data about a record album.
+type multiplica struct {
+    Status     string  `json:"status"`
+    Resultado  string  `jsonresultado"`
+
+}
+
+var resultados = []resultado{
+    {Status: "ok", Resultado: "Blue Train"},
+
+}
 
 // getAlbums responds with the list of all albums as JSON.
 func getAlbums(c *gin.Context) {
@@ -84,5 +95,12 @@ func getMultiplicaByID(c *gin.Context) {
 	
 	resultado := s1final* s2final;
 	 fmt.Println(resultado) 
+	sresultado := fmt.Sprintf("%f", resultado)
+	
+	resultados[0].Resultado = sresultado
+	
+	fmt.Println(resultados[resultado) +"si")
+
+//	response:= json.NewEncoder(w).Encode(map[string]string{"status": "OK"})	
         c.IndentedJSON(http.StatusOK, albums)
 }
