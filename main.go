@@ -65,7 +65,7 @@ type multiplica struct {
 
 }
 
-var resultados = []resultado{
+var resultados = []multiplica{
     {Status: "ok", Resultado: "Blue Train"},
 
 }
