@@ -69,9 +69,8 @@ func getAlbums(c *gin.Context) {
 func getMultiplicaByID(c *gin.Context) {
 	 elemento1 := c.Param("numero1")
 	 elemento2 := c.Param("numero2")
-	s1final := 0
-	s2final := 0
-	err:=nil;
+	var s1final float32 = 0
+	var s2final float32 = 0
 	
 	 
 	if s1, err := strconv.ParseFloat(elemento1, 32); err == nil {
