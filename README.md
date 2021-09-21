@@ -25,10 +25,11 @@ go test
 
 ## Deploying to Heroku
 
-automatic deploy with commit
+automatic deploy with commit in the github repository
 
+Try it:
 
-https://youtochigolanglogin.herokuapp.com/v1/multiplica/2/15
+   https://youtochigolanglogin.herokuapp.com/v1/multiplica/2/15
 
 https://youtochigolanglogin.herokuapp.com/v1/multiplica/1/1
 
