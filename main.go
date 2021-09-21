@@ -68,11 +68,19 @@ func getMultiplicaByID(c *gin.Context) {
 	if s1, err := strconv.ParseFloat(elemento1, 64); err == nil {
              fmt.Println(s1) // 3.1415927410125732
 		s1final =s1;
-       }
+	}else{
+         	respuesta:= json.NewEncoder(w).Encode(map[string]string{"status": "NOK","error":"first parameter is expected numeric"})
+	        c.IndentedJSON(500, respuesta)
+		return
+	}
        if s2, err := strconv.ParseFloat(elemento2, 64); err == nil {
          fmt.Println(s2) // 3.14159265
 	       s2final =s2
-      }
+	}else{
+         	respuesta:= json.NewEncoder(w).Encode(map[string]string{"status": "NOK","error":"second parameter is expected numeric"})
+	        c.IndentedJSON(500, respuesta)
+		return
+	}
 	
 	resultado := s1final* s2final;
 	 fmt.Println(resultado) 
@@ -83,5 +91,6 @@ func getMultiplicaByID(c *gin.Context) {
 	fmt.Println(d+"si")
 
 //	response:= json.NewEncoder(w).Encode(map[string]string{"status": "OK"})	
+	
         c.IndentedJSON(http.StatusOK, resultados)
 }
