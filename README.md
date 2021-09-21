@@ -1,7 +1,10 @@
 
-# go-getting-started
+# testgolang
 
 application deployed in heroku
+
+##Test it online in heroku
+https://youtochigolanglogin.herokuapp.com/v1/multiplica/2/15
 
 
 ## Running Locally
@@ -10,7 +13,14 @@ git clone https://github.com/czendee/testgolang.git
 cd testgolang
 go build
 go run main.go
-
+     
+      test in port 8090
+      http://localhost:8090/v1/multiplica/4/1
+      http://localhost:8090/v1/multiplica/0/0
+      http://localhost:8090/v1/multiplica/1/1
+      http://localhost:8090/v1/multiplica/4/tt
+      http://localhost:8090/v1/multiplica/tt/1
+      http://localhost:8090/v1/multiplica/tt/tt
 go test
 
 ## Deploying to Heroku
