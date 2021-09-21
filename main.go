@@ -88,6 +88,7 @@ func getMultiplicaByID(c *gin.Context) {
 	 fmt.Println(resultado) 
 	sresultado := fmt.Sprintf("%f", resultado)
 	
+	resultados[0].Status ="OK";
 	resultados[0].Resultado = sresultado
 	d:=resultados[0].Resultado 
 	fmt.Println(d+"si")
