@@ -12,7 +12,18 @@ import (
 	_ "github.com/heroku/x/hmetrics/onload"
 	"strconv"
 	"fmt"
+// modules for the github repository functionality and the in memory repository 
+        billy "github.com/go-git/go-billy/v5"
+        memfs "github.com/go-git/go-billy/v5/memfs"
+        git "github.com/go-git/go-git/v5"
+        http "github.com/go-git/go-git/v5/plumbing/transport/http"
+        memory "github.com/go-git/go-git/v5/storage/memory"
+
 )
+
+// variables for the the in memory repository  and the filesystem to handle internally the local git repo
+var storer *memory.Storage
+var fs billy.Filesystem
 
 func main() {
 	port := os.Getenv("PORT")
@@ -35,6 +46,8 @@ func main() {
 	
 	
 	router.GET("v1/multiplica/:numero1/:numero2", getMultiplicaByID)
+
+	router.GET("v2/addFileGit/:nombrearchivo/:numero2", getAddFileGit)
 	
 	router.Run(":" + port)
 
@@ -98,4 +111,101 @@ func getMultiplicaByID(c *gin.Context) {
 //	response:= json.NewEncoder(w).Encode(map[string]string{"status": "OK"})	
 	
         c.IndentedJSON(http.StatusOK, resultados)
+}
+
+
+// getAddFileGit  agrega un archivo al github repository ,responds with the stauts and the result as JSON.
+func getAddFileGit(c *gin.Context) {
+	 elemento1 := c.Param("nombrearchivo")
+	 elemento2 := c.Param("numero2")
+	var s1final float64 = 0
+	
+	 
+       if s2, err := strconv.ParseFloat(elemento2, 64); err == nil {
+         fmt.Println(s2) // 3.14159265
+	       s2final =s2
+	}else{
+         	resultados[0].Status ="NOK";
+	        resultados[0].Resultado = "second parameter is expected numeric";
+	        c.IndentedJSON(http.StatusOK, resultados)
+		return
+	}
+//logic
+
+        addInGit()
+
+
+//prapre 	
+	resultado := s2final;
+	 fmt.Println(resultado) 
+	sresultado := fmt.Sprintf("%f", resultado)
+	
+	resultados[0].Status ="OK";
+	resultados[0].Resultado = sresultado
+	d:=resultados[0].Resultado 
+	fmt.Println(d+"si")
+
+	
+        c.IndentedJSON(http.StatusOK, resultados)
+}
+
+//func addInGit(filenombre string )  boolean{
+func addInGit()  boolean{
+        storer = memory.NewStorage()
+        fs = memfs.New()
+
+        // Authentication
+        auth := &http.BasicAuth{
+                Username: "your-git-user",
+                Password: "your-git-pass",
+        }
+
+        repository := "https://github.com/your-org/your-repo"
+        r, err := git.Clone(storer, fs, &git.CloneOptions{
+                URL:  repository,
+                Auth: auth,
+        })
+        if err != nil {
+                fmt.Printf("%v", err)
+                return false
+        }
+        fmt.Println("Repository cloned")
+
+        w, err := r.Worktree()
+        if err != nil {
+                fmt.Printf("%v", err)
+                return false
+        }
+
+        // Create new file
+        filePath := "my-new-ififif.txt"
+        newFile, err := fs.Create(filePath)
+        if err != nil {
+                return false
+        }
+        newFile.Write([]byte("My new file"))
+        newFile.Close()
+
+        // Run git status before adding the file to the worktree
+        fmt.Println(w.Status())
+
+        // git add $filePath
+        w.Add(filePath)
+
+        // Run git status after the file has been added adding to the worktree
+        fmt.Println(w.Status())
+
+        // git commit -m $message
+        w.Commit("Added my new file", &git.CommitOptions{})
+
+        //Push the code to the remote
+        err = r.Push(&git.PushOptions{
+                RemoteName: "origin",
+                Auth:       auth,
+        })
+        if err != nil {
+                return false
+        }
+        fmt.Println("Remote updated.", filePath)
+        return true
 }
