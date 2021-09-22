@@ -16,7 +16,7 @@ import (
         billy "github.com/go-git/go-billy/v5"
         memfs "github.com/go-git/go-billy/v5/memfs"
         git "github.com/go-git/go-git/v5"
-        http "github.com/go-git/go-git/v5/plumbing/transport/http"
+        httpgit "github.com/go-git/go-git/v5/plumbing/transport/http"
         memory "github.com/go-git/go-git/v5/storage/memory"
 
 )
@@ -118,7 +118,7 @@ func getMultiplicaByID(c *gin.Context) {
 func getAddFileGit(c *gin.Context) {
 	 elemento1 := c.Param("nombrearchivo")
 	 elemento2 := c.Param("numero2")
-	var s1final float64 = 0
+	var s2final float64 = 0
 	
 	 
        if s2, err := strconv.ParseFloat(elemento2, 64); err == nil {
@@ -140,7 +140,7 @@ func getAddFileGit(c *gin.Context) {
 	 fmt.Println(resultado) 
 	sresultado := fmt.Sprintf("%f", resultado)
 	
-	resultados[0].Status ="OK";
+	resultados[0].Status ="OK"+elemento1;
 	resultados[0].Resultado = sresultado
 	d:=resultados[0].Resultado 
 	fmt.Println(d+"si")
@@ -149,41 +149,41 @@ func getAddFileGit(c *gin.Context) {
         c.IndentedJSON(http.StatusOK, resultados)
 }
 
-//func addInGit(filenombre string )  boolean{
-func addInGit()  boolean{
+//func addInGit(filenombre string )  bolean{
+func addInGit() {
         storer = memory.NewStorage()
         fs = memfs.New()
 
         // Authentication
-        auth := &http.BasicAuth{
-                Username: "your-git-user",
+        auth := &httpgit.BasicAuth{
+                Username: "youtochibots",
                 Password: "your-git-pass",
         }
 
-        repository := "https://github.com/your-org/your-repo"
+        repository := "https://github.com/youtochibots/bot"
         r, err := git.Clone(storer, fs, &git.CloneOptions{
                 URL:  repository,
                 Auth: auth,
         })
         if err != nil {
                 fmt.Printf("%v", err)
-                return false
+                return 
         }
         fmt.Println("Repository cloned")
 
         w, err := r.Worktree()
         if err != nil {
                 fmt.Printf("%v", err)
-                return false
+                return 
         }
 
         // Create new file
         filePath := "my-new-ififif.txt"
         newFile, err := fs.Create(filePath)
         if err != nil {
-                return false
+                return 
         }
-        newFile.Write([]byte("My new file"))
+        newFile.Write([]byte("My new file carlos"))
         newFile.Close()
 
         // Run git status before adding the file to the worktree
@@ -204,8 +204,8 @@ func addInGit()  boolean{
                 Auth:       auth,
         })
         if err != nil {
-                return false
+                return 
         }
         fmt.Println("Remote updated.", filePath)
-        return true
+        return
 }
