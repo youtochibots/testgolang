@@ -73,7 +73,7 @@ func getMultiplicaByID(c *gin.Context) {
 	}else{
 		resultados[0].Status ="NOK";
 	        resultados[0].Resultado = "first parameter is expected numeric";
-	        c.IndentedJSON(http.StatusOK, resultados)
+	        c.IndentedJSON(500, resultados)
 		return
 	}
        if s2, err := strconv.ParseFloat(elemento2, 64); err == nil {
@@ -82,7 +82,7 @@ func getMultiplicaByID(c *gin.Context) {
 	}else{
          	resultados[0].Status ="NOK";
 	        resultados[0].Resultado = "second parameter is expected numeric";
-	        c.IndentedJSON(http.StatusOK, resultados)
+	        c.IndentedJSON(500, resultados)
 		return
 	}
 	
