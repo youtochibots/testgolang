@@ -1,185 +1,39 @@
 package main
 
-/*
 
-version with sessions bcrypt fmt
-
-import (
-         "github.com/gorilla/sessions"
-         "golang.org/x/crypto/bcrypt"
-         "html/template"
-         "log"
-         "net/http"
-         "fmt"
-		"os"
- )
-
- var encryptionKey = "something-very-secret"
- var loggedUserSession = sessions.NewCookieStore([]byte(encryptionKey))
-
- func init() {
-
-         loggedUserSession.Options = &sessions.Options{
-                 // change domain to match your machine. Can be localhost
-                 // IF the Domain name doesn't match, your session will be EMPTY!
-                 Domain:   "localhost",
-                 Path:     "/",
-                 MaxAge:   3600 * 3, // 3 hours
-                 HttpOnly: true,
-         }
- }
-
- const dashBoardPage = `<html><body>
-
-  {{if .Username}}
-          <p><b>{{.Username}}</b>, welcome to your dashboard! <a href="/logout">Logout!</a></p>
-  {{else}}
-          <p>Either your session has expired or you've logged out! <a href="/login">Login</a></p>
-  {{end}}
-
-  </body></html>`
-
- const logUserPage = `<html><body>
-  {{if .LoginError}}<p style="color:red">Either username or password is not in our record! Sign Up?</p>{{end}}
-
-  <form method="post" action="/login">
-          {{if .Username}}
-                   <p><b>{{.Username}}</b>, you're already logged in! <a href="/logout">Logout!</a></p>
-          {{else}}
-                  <label>Username:</label>
-                  <input type="text" name="Username"><br>
-
-                  <label>Password:</label>
-                  <input type="password" name="Password">
-
-                  <span style="font-style:italic"> Enter: 'mynakedpassword'</span><br>
-                  <input type="submit" name="Login" value="Let me in!">
-          {{end}}
-  </form>
-  </body></html>`
-
- var dashboardTemplate = template.Must(template.New("").Parse(dashBoardPage))
- var logUserTemplate = template.Must(template.New("").Parse(logUserPage))
-
- func DashBoardPageHandler(w http.ResponseWriter, r *http.Request) {
-         conditionsMap := map[string]interface{}{}
-         //read from session
-         session, err := loggedUserSession.Get(r, "authenticated-user-session")
-
-         if err != nil {
-                 log.Println("Unable to retrieve session data!", err)
-         }
-
-         log.Println("Session name : ", session.Name())
-
-         log.Println("Username : ", session.Values["username"])
-
-         conditionsMap["Username"] = session.Values["username"]
-
-         if err := dashboardTemplate.Execute(w, conditionsMap); err != nil {
-                 log.Println(err)
-         }
- }
-
- func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
-
-         conditionsMap := map[string]interface{}{}
-
-         // check if session is active
-         session, _ := loggedUserSession.Get(r, "authenticated-user-session")
-
-         if session != nil {
-                 conditionsMap["Username"] = session.Values["username"]
-         }
-
-         // verify username and password
-         if r.FormValue("Login") != "" && r.FormValue("Username") != "" {
-                 username := r.FormValue("Username")
-                 password := r.FormValue("Password")
-
-                 // NOTE: here is where you want to query your database to retrieve the hashed password
-                 // for username.
-                 // For this tutorial and simplicity sake, we will simulate the retrieved hashed password
-                 // as $2a$10$4Yhs5bfGgp4vz7j6ScujKuhpRTA4l4OWg7oSukRbyRN7dc.C1pamu
-                 // the plain password is 'mynakedpassword'
-                 // see https://www.socketloop.com/tutorials/golang-bcrypting-password for more details
-                 // on how to generate bcrypted password
-
-                 hashedPasswordFromDatabase := []byte("$2a$10$4Yhs5bfGgp4vz7j6ScujKuhpRTA4l4OWg7oSukRbyRN7dc.C1pamu")
-
-                 if err := bcrypt.CompareHashAndPassword(hashedPasswordFromDatabase, []byte(password)); err != nil {
-                         log.Println("Either username or password is wrong")
-                         conditionsMap["LoginError"] = true
-                 } else {
-                         log.Println("Logged in :", username)
-                         conditionsMap["Username"] = username
-                         conditionsMap["LoginError"] = false
-
-                         // create a new session and redirect to dashboard
-                         session, _ := loggedUserSession.New(r, "authenticated-user-session")
-
-                         session.Values["username"] = username
-                         err := session.Save(r, w)
-
-                         if err != nil {
-                                 log.Println(err)
-                         }
-
-                         http.Redirect(w, r, "/dashboard", http.StatusFound)
-                 }
-
-         }
-
-         if err := logUserTemplate.Execute(w, conditionsMap); err != nil {
-                 log.Println(err)
-         }
- }
-
- func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-         //read from session
-         session, _ := loggedUserSession.Get(r, "authenticated-user-session")
-
-         // remove the username
-         session.Values["username"] = ""
-         err := session.Save(r, w)
-
-         if err != nil {
-                 log.Println(err)
-         }
-
-         w.Write([]byte("Logged out!"))
- }
-
- func main() {
-         fmt.Println("Server starting, point your browser to localhost:8080/login to start")
-         http.HandleFunc("/login", LoginPageHandler)
-         http.HandleFunc("/dashboard", DashBoardPageHandler)
-         http.HandleFunc("/logout", LogoutHandler)
-
-         //http.ListenAndServe(":8080", nil)
-	 //using port in heroku
-	 port := os.Getenv("PORT") 
-	 http.ListenAndServe(":" + port, nil)
- }
-trermina version gorrila bencrypt
-
-*/
 
 //  original 
 import (
-	"log"
+//	"log"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
+	"strconv"
+	"fmt"
+	
+// modules for the github repository functionality and the in memory repository 
+        billy "github.com/go-git/go-billy/v5"
+        memfs "github.com/go-git/go-billy/v5/memfs"
+        git "github.com/go-git/go-git/v5"
+        httpgit "github.com/go-git/go-git/v5/plumbing/transport/http"
+        memory "github.com/go-git/go-git/v5/storage/memory"	
 )
+
+
+// variables for the the in memory repository  and the filesystem to handle internally the local git repo
+var storer *memory.Storage
+var fs billy.Filesystem
+
 
 func main() {
 	port := os.Getenv("PORT")
 
+
 	if port == "" {
-		log.Fatal("$PORT must be set")
+//		log.Fatal("$PORT must be set")
+                port ="8090"
 	}
 
 	router := gin.New()
@@ -187,143 +41,151 @@ func main() {
 	router.LoadHTMLGlob("templates/*.tmpl.html")
 	router.Static("/static", "static")
 
-	router.GET("/", func(c *gin.Context) {
+	router.GET("/inicio", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 
+	
+	
+	router.GET("v1/multiplica/:numero1/:numero2", getMultiplicaByID)
+	
+	router.GET("v2/addFileGit/:nombrearchivo/:numero2", getAddFileGit)
+	
 	router.Run(":" + port)
+
+
 }
 //termin ortiginall
 
-
-/*
-version with gorrilla  mux 
+ 
 
 
-import (
-	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/gorilla/securecookie"
-	"net/http"
-)
 
-// cookie handling
+// multiplica represents data about multiplicacion.
+type multiplica struct {
+    Status     string  `json:"status"`
+    Resultado  string  `json:"resultado"`
 
-var cookieHandler = securecookie.New(
-	securecookie.GenerateRandomKey(64),
-	securecookie.GenerateRandomKey(32))
+}
 
-func getUserName(request *http.Request) (userName string) {
-	if cookie, err := request.Cookie("session"); err == nil {
-		cookieValue := make(map[string]string)
-		if err = cookieHandler.Decode("session", cookie.Value, &cookieValue); err == nil {
-			userName = cookieValue["name"]
-		}
+var resultados = []multiplica{
+    {Status: "ok", Resultado: "Blue Train"},
+
+}
+
+
+// getMultiplicaByID responds with the stauts and the result as JSON.
+func getMultiplicaByID(c *gin.Context) {
+	 elemento1 := c.Param("numero1")
+	 elemento2 := c.Param("numero2")
+	var s1final float64 = 0
+	var s2final float64 = 0
+	
+	 
+	if s1, err := strconv.ParseFloat(elemento1, 64); err == nil {
+             fmt.Println(s1) // 3.1415927410125732
+		s1final =s1;
+	}else{
+		resultados[0].Status ="NOK";
+	        resultados[0].Resultado = "first parameter is expected numeric";
+	        c.IndentedJSON(500, resultados)
+		return
 	}
-	return userName
-}
-
-func setSession(userName string, response http.ResponseWriter) {
-	value := map[string]string{
-		"name": userName,
+       if s2, err := strconv.ParseFloat(elemento2, 64); err == nil {
+         fmt.Println(s2) // 3.14159265
+	       s2final =s2
+	}else{
+         	resultados[0].Status ="NOK";
+	        resultados[0].Resultado = "second parameter is expected numeric";
+	        c.IndentedJSON(500, resultados)
+		return
 	}
-	if encoded, err := cookieHandler.Encode("session", value); err == nil {
-		cookie := &http.Cookie{
-			Name:  "session",
-			Value: encoded,
-			Path:  "/",
-		}
-		http.SetCookie(response, cookie)
-	}
-}
+	
+	resultado := s1final* s2final;
+	 fmt.Println(resultado) 
+	sresultado := fmt.Sprintf("%f", resultado)
+	
+	resultados[0].Status ="OK";
+	resultados[0].Resultado = sresultado
+	d:=resultados[0].Resultado 
+	fmt.Println(d+"si")
 
-func clearSession(response http.ResponseWriter) {
-	cookie := &http.Cookie{
-		Name:   "session",
-		Value:  "",
-		Path:   "/",
-		MaxAge: -1,
-	}
-	http.SetCookie(response, cookie)
-}
-
-// login handler
-
-func loginHandler(response http.ResponseWriter, request *http.Request) {
-	name := request.FormValue("name")
-	pass := request.FormValue("password")
-	redirectTarget := "/"
-	if name != "" && pass != "" {
-		// .. check credentials ..
-		setSession(name, response)
-		redirectTarget = "/internal"
-	}
-	http.Redirect(response, request, redirectTarget, 302)
-}
-
-// logout handler
-
-func logoutHandler(response http.ResponseWriter, request *http.Request) {
-	clearSession(response)
-	http.Redirect(response, request, "/", 302)
-}
-
-// index page
-
-const indexPage = `
-<h1>Login</h1>
-<form method="post" action="/login">
-    <label for="name">User name</label>
-    <input type="text" id="name" name="name">
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password">
-    <button type="submit">Login</button>
-</form>
-`
-
-func indexPageHandler(response http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(response, indexPage)
-}
-
-// internal page
-
-const internalPage = `
-<h1>Internal</h1>
-<hr>
-<small>User: %s</small>
-<form method="post" action="/logout">
-    <button type="submit">Logout</button>
-</form>
-`
-
-func internalPageHandler(response http.ResponseWriter, request *http.Request) {
-	userName := getUserName(request)
-	if userName != "" {
-		fmt.Fprintf(response, internalPage, userName)
-	} else {
-		http.Redirect(response, request, "/", 302)
-	}
-}
-
-// server main method
-
-var router = mux.NewRouter()
-
-func main() {
-
-	router.HandleFunc("/", indexPageHandler)
-	router.HandleFunc("/internal", internalPageHandler)
-
-	router.HandleFunc("/login", loginHandler).Methods("POST")
-	router.HandleFunc("/logout", logoutHandler).Methods("POST")
-
-	http.Handle("/", router)
-
-         //http.ListenAndServe(":8080", nil)
-	 //using port in heroku
-	 port := os.Getenv("PORT") 
-	 http.ListenAndServe(":" + port, nil)
+//	response:= json.NewEncoder(w).Encode(map[string]string{"status": "OK"})	
+	
+        c.IndentedJSON(http.StatusOK, resultados)
 }
 
 
-*/
+//func addInGit(filenombre string )  bolean{
+func addInGit() {
+	
+	fmt.Println("addInGit   delcare in memory")
+	
+        storer = memory.NewStorage()
+        fs = memfs.New()
+        fmt.Println("addInGit   set auth")
+        // Authentication
+        auth := &httpgit.BasicAuth{
+                Username: "youtochibots",
+                Password: "Imposibl",
+        }
+
+	fmt.Println("addInGit   define github repository and login ")
+        repository := "https://github.com/youtochibots/bot.git"
+        r, err := git.Clone(storer, fs, &git.CloneOptions{
+                URL:  repository,
+//                Auth: auth,
+        })
+	
+	fmt.Println("addInGit   login in ok")
+	
+        if err != nil {
+                fmt.Printf("%v", err)
+                return 
+        }
+        fmt.Println("Repository cloned")
+
+        w, err := r.Worktree()
+        if err != nil {
+                fmt.Printf("%v", err)
+                return 
+        }
+
+	fmt.Println("addInGit   create new file")
+        // Create new file
+        filePath := "my-new-ififif.txt"
+        newFile, err := fs.Create(filePath)
+        if err != nil {
+                return 
+        }
+        newFile.Write([]byte("My new file carlos"))
+        newFile.Close()
+
+        // Run git status before adding the file to the worktree
+        fmt.Println(w.Status())
+
+	fmt.Println("addInGit   git add the file")
+        // git add $filePath
+        w.Add(filePath)
+
+        // Run git status after the file has been added adding to the worktree
+        fmt.Println(w.Status())
+
+	fmt.Println("addInGit   git commit")
+        // git commit -m $message
+        w.Commit("Added my new file", &git.CommitOptions{})
+
+	
+	fmt.Println("addInGit   git push")
+        //Push the code to the remote
+        err = r.Push(&git.PushOptions{
+                RemoteName: "origin",
+                Auth:       auth,
+        })
+        if err != nil {
+                fmt.Printf("%v", err)		
+                return 
+        }
+        fmt.Println("Remote updated.", filePath)
+        return
+}
