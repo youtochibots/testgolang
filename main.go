@@ -116,6 +116,7 @@ func getMultiplicaByID(c *gin.Context) {
 }
 
 
+
 //func addInGit(filenombre string )  bolean{
 func addInGit() {
 	
@@ -126,8 +127,10 @@ func addInGit() {
         fmt.Println("addInGit   set auth")
         // Authentication
         auth := &httpgit.BasicAuth{
-                Username: "youtochibots",
-                Password: "Imposibl",
+//                Username: "youtochibots",
+                Username: "izendejass600@gmail.com",
+//                Password: "Imposible06_",
+                Password: "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",  //git token
         }
 
 	fmt.Println("addInGit   define github repository and login ")
@@ -169,7 +172,7 @@ func addInGit() {
         w.Add(filePath)
 
         // Run git status after the file has been added adding to the worktree
-        fmt.Println(w.Status())
+        fmt.Println(w.Status()) //displays A accoridng with doc this is add  https://pkg.go.dev/github.com/go-git/go-git/v5@v5.1.0#StatusCode
 
 	fmt.Println("addInGit   git commit")
         // git commit -m $message
@@ -183,9 +186,46 @@ func addInGit() {
                 Auth:       auth,
         })
         if err != nil {
+	        fmt.Println("addInGit   git push: depsues- fallo")
                 fmt.Printf("%v", err)		
                 return 
         }
+	fmt.Println("addInGit   git push:despues -ok")
         fmt.Println("Remote updated.", filePath)
         return
+}
+
+// getAddFileGit  agrega un archivo al github repository ,responds with the stauts and the result as JSON.
+func getAddFileGit(c *gin.Context) {
+	 elemento1 := c.Param("nombrearchivo")
+	 elemento2 := c.Param("numero2")
+	var s2final float64 = 0
+	
+	 
+       if s2, err := strconv.ParseFloat(elemento2, 64); err == nil {
+         fmt.Println(s2) // 3.14159265
+	       s2final =s2
+	}else{
+         	resultados[0].Status ="NOK";
+	        resultados[0].Resultado = "second parameter is expected numeric";
+	        c.IndentedJSON(http.StatusOK, resultados)
+		return
+	}
+//logic
+
+        addInGit()
+
+
+//prapre 	
+	resultado := s2final;
+	 fmt.Println(resultado) 
+	sresultado := fmt.Sprintf("%f", resultado)
+	
+	resultados[0].Status ="OK"+elemento1;
+	resultados[0].Resultado = sresultado
+	d:=resultados[0].Resultado 
+	fmt.Println(d+"si")
+
+	
+        c.IndentedJSON(http.StatusOK, resultados)
 }
